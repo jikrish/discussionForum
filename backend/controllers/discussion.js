@@ -3,8 +3,8 @@ const Discussion = require("../models/post");
 //getAll
 const getAll = async (req, res) => {
   try {
-    const posts = await Discussion.find().sort("createdAt");
-    res.status(200).json({ count: posts.length, posts });
+    const posts = await Discussion.find().sort({ createdAt: -1 });
+    res.status(200).json({ posts });
   } catch (error) {
     res.status(404).json({
       status: "error",
@@ -47,10 +47,13 @@ const createOne = async (req, res) => {
 };
 
 //updateOne - complete it
-const updateOne = (req, res) => {
+const updateOne = async (req, res) => {
   try {
     const id = req.params.id;
-    res.send(`updateOne post of id ${id}`);
+    await Discussion.findByIdAndUpdate(id, {
+      $push: { replies: req.body },
+    });
+    res.status(201).send("success");
   } catch (error) {
     res.status(404).json({
       status: "error",
